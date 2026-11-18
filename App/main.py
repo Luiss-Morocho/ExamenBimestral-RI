@@ -8,6 +8,7 @@ from nltk.stem import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 from typing import Literal, List
 
@@ -63,6 +64,10 @@ class SearchResponse(BaseModel):
 def preprocess_text(text: str) -> list[str]:
     tokens = re.findall(r'\b[a-z0-9]+\b', text.lower())
     return [stemmer.stem(tok) for tok in tokens if tok not in stop_words and len(tok) > 1]
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
 
 @app.get("/health")
 def health_check():
